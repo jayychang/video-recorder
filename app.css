@@ -1,0 +1,21 @@
+.box-content {
+  width: 100%;
+  height: 100%;
+  /*top: 0;right: 0;bottom: 0;left: 0;
+  position: absolute;*/
+  margin: auto;
+}
+
+.box {
+  text-align: center;
+  position: relative;
+  width: auto !important;
+  height: auto !important;
+  overflow: hidden;
+}
+
+.box::before {
+    content: "";
+    display: block;
+    padding-top: auto; /*square for no ratio*/
+}
