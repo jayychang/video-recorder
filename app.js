@@ -8,10 +8,8 @@ function cameraToggle() {
         startCamera();
         return;
     }
-
     var v = document.getElementById('videoStream');
     var button = document.getElementById('cameraButton');
-
     if (v.paused || v.ended) {
         button.innerHTML = "Pause Stream";
         v.play();
@@ -22,29 +20,27 @@ function cameraToggle() {
 }
 
 function recordVideo() {
-  var button = document.getElementById("recordButton")
-  if(recording) {
-    button.innerHTML = "Start Recording"
-    recorder.stop();
-    createVideo();
-    recording = !recording;
-  } else {
-    button.innerHTML = "Stop Recording"
-    chunks = [];
-    recorder.start();
-    recorder.ondataavailable = function(e) {
-      chunks.push(e.data);
+    var button = document.getElementById("recordButton")
+    if (recorder == null) return;
+    if (recording) {
+        button.innerHTML = "Start Recording"
+        recorder.stop();
+        createVideo();
+        recording = !recording;
+    } else {
+        button.innerHTML = "Stop Recording"
+        chunks = [];
+        recorder.start();
+        recording = !recording;
     }
-    recording = !recording;
-  }
 }
 
 function createVideo() {
-  let blob = new Blob(chunks, {type: 'video/webm' })
-  let url = URL.createObjectURL(blob)
-  var recordedVideo = document.getElementById("recordedVideo");
-  recordedVideo.controls = true;
-  recordedVideo.src = url;
+    let blob = new Blob(chunks, {type: 'video/webm' })
+    let url = URL.createObjectURL(blob)
+    var recordedVideo = document.getElementById("recordedVideo");
+    recordedVideo.controls = true;
+    recordedVideo.src = url;
 }
 // camera setup
 function startCamera() {
@@ -54,7 +50,6 @@ function startCamera() {
         navigator.mozGetUserMedia ||
         navigator.msGetUserMedia ||
         navigator.oGetUserMedia;
-
     if (navigator.getUserMedia) {
         // get webcam feed if available
         navigator.getUserMedia({video: true, audio: true}, handleVideo, videoError);
@@ -67,10 +62,12 @@ function handleVideo(stream) {
     if (video != null) {
         video.src = window.URL.createObjectURL(stream);
         recorder = new MediaRecorder(stream);
+        recorder.ondataavailable = function(e) {
+            chunks.push(e.data);
+        }
     } else {
         videoError("The camera is currently in use by another application or tab.")
     }
-
     cameraStarted = true;
     cameraToggle();
 }
