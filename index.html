@@ -1,35 +1,30 @@
 <!doctype HTML>
 <head>
   <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MediaRecorder API - Sample</title>
-
+  <title>Playing around with MediaRecorder</title>
   <!-- libraries -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <!-- core -->
   <link rel="stylesheet" href="app.css">
   <script src="app.js"></script>
 </head>
 <body>
   <div class="container">
-    <div>
-      Video Recording
-    </div>
+
     <div class="row">
-      <div class="col-sm-4">
-          <video class="box-content" id="videoStream" muted></video>
-        <!-- <div class="box ratio1_1">
-          <img class="box-content test img-box" id="output" src="">
-        </div> -->
-          <video class="box-content" id="recordedVideo"></video>
-      </div>
       <div class="col-sm-8">
-        Check yourself out. And record when ready
-        <div>
-          <button type="button" class="btn" onclick="cameraToggle()" id="cameraButton">Start Stream</button>
-          <button type="button" class="btn" onclick="recordVideo()" id="recordButton">Start Recording</button>
+        <div class="box">
+          <img class="box-content" id="videoPlaceholder" src="http://placehold.it/250x250/"/>
+          <video class="box-content hidden" id="videoStream" muted></video>
+          <video class="box-content hidden" id="videoTaken"></video>
         </div>
       </div>
+      <div class="col-sm-4">
+        <p>Check yourself out. And record when ready</p>
+        <button type="button" class="btn" onclick="videoToggle()" id="videoButton">Start Stream</button>
+      </div>
     </div>
+
   </div>
 </body>

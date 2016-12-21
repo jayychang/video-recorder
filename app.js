@@ -1,77 +1,89 @@
-var cameraStarted = false;
-var recording = false;
+// Video Recording
+
 var recorder;
 var chunks;
+var videoFlag = 0;
 
-function cameraToggle() {
-    if (!cameraStarted) {
-        startCamera();
-        return;
-    }
-    var v = document.getElementById('videoStream');
-    var button = document.getElementById('cameraButton');
-    if (v.paused || v.ended) {
-        button.innerHTML = "Pause Stream";
-        v.play();
-    } else {
-        button.innerHTML = "Resume Stream";
-        v.pause();
-    }
-}
-
-function recordVideo() {
-    var button = document.getElementById("recordButton")
-    if (recorder == null) return;
-    if (recording) {
-        button.innerHTML = "Start Recording"
-        recorder.stop();
-        createVideo();
-        recording = !recording;
-    } else {
-        button.innerHTML = "Stop Recording"
-        chunks = [];
-        recorder.start();
-        recording = !recording;
+function videoToggle() {
+    let button = document.getElementById("videoButton");
+    switch (videoFlag) {
+      case 1:
+        videoFlag = 2;
+        button.innerHTML = "Stop Recording";
+        startRecording();
+        break;
+      case 2:
+        videoFlag = 3;
+        button.innerHTML = "Redo Recording";
+        finishRecording();
+        break;
+      case 3:
+        videoFlag = 1;
+        button.innerHTML = "Start Recording";
+        redoRecording();
+        break;
+      case 4:
+        break;
+      default:
+        videoFlag = 1;
+        button.innerHTML = "Start Recording";
+        requestVideo();
     }
 }
 
-function createVideo() {
-    let blob = new Blob(chunks, {type: 'video/webm' })
-    let url = URL.createObjectURL(blob)
-    var recordedVideo = document.getElementById("recordedVideo");
-    recordedVideo.controls = true;
-    recordedVideo.src = url;
-}
-// camera setup
-function startCamera() {
-    // check for getUserMedia support
+function requestVideo() {
+  // BELOW IS TEMP FIX
     navigator.getUserMedia = navigator.getUserMedia ||
-        navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia ||
-        navigator.msGetUserMedia ||
-        navigator.oGetUserMedia;
-    if (navigator.getUserMedia) {
-        // get webcam feed if available
-        navigator.getUserMedia({video: true, audio: true}, handleVideo, videoError);
+      navigator.webkitGetUserMedia ||
+      navigator.mozGetUserMedia ||
+      navigator.msGetUserMedia ||
+      navigator.oGetUserMedia;
+    if(!navigator.getUserMedia) {
+      alert("Please use Chrome or Firefox");
+      document.getElementById("videoButton").innerHTML = "Not supported";
+      videoFlag = 4;
+      return;
     }
-}
-
-function handleVideo(stream) {
-    // if found attach feed to video element
-    var video = document.querySelector("#videoStream");
-    if (video != null) {
-        video.src = window.URL.createObjectURL(stream);
+    let input = document.getElementById("videoStream");
+    navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+    }).then(stm => {
+        stream = stm;
+        input.src = URL.createObjectURL(stream);
         recorder = new MediaRecorder(stream);
-        recorder.ondataavailable = function(e) {
+
+        recorder.ondataavailable = e => {
             chunks.push(e.data);
+            if (recorder.state == "inactive") makeVideo();
         }
-    } else {
-        videoError("The camera is currently in use by another application or tab.")
-    }
-    cameraStarted = true;
-    cameraToggle();
+    }).catch(e => console.error(e));
+    $("#videoPlaceholder").addClass("hidden");
+    $("#videoStream").removeClass("hidden");
+    input.play();
 }
 
-function videoError(e) {
-    window.alert("Something went wrong:  \n\n" + e);
+function makeVideo() {
+    let output = document.getElementById("videoTaken");
+    let blob = new Blob(chunks, {type: "video/webm"});
+    let url = URL.createObjectURL(blob);
+    output.controls = true;
+    output.src = url;
+}
+
+function startRecording() {
+    chunks = [];
+    recorder.start();
+}
+
+function finishRecording() {
+    recorder.stop();
+    $("#videoStream").addClass("hidden");
+    $("#videoTaken").removeClass("hidden");
+}
+
+function redoRecording() {
+    $("#videoStream").removeClass("hidden");
+    $("#videoTaken").addClass("hidden");
+    $("#videoTaken").attr("src","");
 }

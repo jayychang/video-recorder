@@ -1,21 +1,21 @@
-.box-content {
-  width: 100%;
-  height: 100%;
-  /*top: 0;right: 0;bottom: 0;left: 0;
-  position: absolute;*/
-  margin: auto;
+body {
+  margin: 50px;
 }
 
 .box {
-  text-align: center;
+  width: 100%;
+  padding-bottom: 100%;
   position: relative;
-  width: auto !important;
-  height: auto !important;
   overflow: hidden;
 }
 
-.box::before {
-    content: "";
-    display: block;
-    padding-top: auto; /*square for no ratio*/
+.box-content {
+    width: 100%;
+    /*height: 100%;*/
+    margin: auto;
+    position: absolute;
+}
+
+.hidden {
+    display: none;
 }
